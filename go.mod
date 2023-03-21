@@ -6,7 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/google/wire v0.5.0
 	github.com/json-iterator/go v1.1.12
-	github.com/lixianmin/gonsole v0.0.0-20230321081804-f68916b07ca1
+	github.com/lixianmin/gonsole v0.0.0-20230321114459-460fe0f3f879
 	github.com/lixianmin/got v0.0.0-20230217091427-fa67fedfd901
 	github.com/lixianmin/logo v0.0.0-20220519032357-f73455888a56
 	github.com/spf13/viper v1.12.0

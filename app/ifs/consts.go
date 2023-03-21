@@ -10,7 +10,6 @@ Copyright (C) - All Rights Reserved
 const (
 	None = iota
 
-	PitayaClientKey     = "pitaya_client"
 	ConfigServerTcpPort = "server.tcpPort"
 	ConfigServerWebPort = "server.webPort"
 )
