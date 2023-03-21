@@ -1,0 +1,11 @@
+# 日志输出级别: debug, info, warn, error
+logger:
+  filterLevel: info
+  larkToken: 0 
+
+server:
+  tcpPort: 8001
+  webPort: 8002
+
+  userPasswords:
+    xmli: pet1029

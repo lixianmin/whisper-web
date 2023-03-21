@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  golang:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    # 1. 如果是host模式，其实不用 ports 映射端口，但是不知道为什么，在macos上host模式就是无法映射出端口。在centos上面是成功的。
+    # 2. 但是，如果不使用host模式，那么钉钉消息就发送不出来，使用curl测试也发送不了数据，所以还是使用host模式吧
+    # 3. 如果要在macos上测试，则需要注释掉host模式这一行，并手动开放端口映射功能
+    network_mode: "host"
+    ports:
+      - 8001:8001
+      - 8002:8002
+      # 第一个目录是docker外的主机目录，第二个目录是docker内的目录，相互影射
+      # 在macos上，因为/data目录没有权限，直接注释掉吧
+    volumes:
+      - ~/data/whisper-web/logs:/app/logs:rw
+    environment:
+      ENV: ${ENV:-DEV}
