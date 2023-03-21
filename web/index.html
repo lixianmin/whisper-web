@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="zh_CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico" />
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="shortcut icon" type="image/ico" href="/src/assets/favicon.ico"/>
     <title>Whisper Web</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script src="./src/App.jsx" type="module"></script>
-  </body>
+</head>
+<body>
+<script>
+    function printTextarea(...args) {
+        console.log(...args)
+    }
+
+    var Module = {
+        print: printTextarea,
+        printErr: printTextarea,
+        setStatus: function (text) {
+            printTextarea('js: ' + text);
+        },
+        monitorRunDependencies: function (left) {
+        }
+    };
+</script>
+<div id="root"></div>
+<script src="./statics/whisper.js" type="application/javascript"></script>
+<script src="./src/App.jsx" type="module"></script>
+</body>
 </html>
