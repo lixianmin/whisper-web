@@ -15,6 +15,7 @@
   "dependencies": {
     "@types/node": "^18.15.5",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "dexie": "^3.2.3",
     "solid-js": "^1.6.10"
   }
 }

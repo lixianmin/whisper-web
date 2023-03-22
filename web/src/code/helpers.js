@@ -1,5 +1,7 @@
 // Common Javascript functions used by the examples
 
+import {createWisperModel} from "./dao/whisper_model";
+
 async function clearCache() {
     if (confirm('Are you sure you want to clear the cache?\nAll the models will be downloaded again.')) {
         indexedDB.deleteDatabase(dbName);
@@ -34,7 +36,7 @@ async function fetchRemote(url, cbProgress, cbPrint) {
     let progressLast = -1;
 
     while (true) {
-        const { done, value } = await reader.read();
+        const {done, value} = await reader.read();
 
         if (done) {
             break;
@@ -44,11 +46,11 @@ async function fetchRemote(url, cbProgress, cbPrint) {
         receivedLength += value.length;
 
         if (contentLength) {
-            cbProgress(receivedLength/total);
+            cbProgress(receivedLength / total);
 
             var progressCur = Math.round((receivedLength / total) * 10);
             if (progressCur !== progressLast) {
-                cbPrint('fetchRemote: fetching ' + 10*progressCur + '% ...');
+                cbPrint('fetchRemote: fetching ' + 10 * progressCur + '% ...');
                 progressLast = progressCur;
             }
         }
@@ -69,26 +71,34 @@ async function fetchRemote(url, cbProgress, cbPrint) {
 // - check if the data is already in the IndexedDB
 // - if not, fetch it from the remote URL and store it in the IndexedDB
 export function loadRemote(url, dst, size_mb, cbProgress, cbReady, cbCancel, cbPrint) {
-    if (!navigator.storage || !navigator.storage.estimate) {
-        cbPrint('loadRemote: navigator.storage.estimate() is not supported');
-    } else {
-        // query the storage quota and print it
-        navigator.storage.estimate().then(function (estimate) {
-            cbPrint('loadRemote: storage quota: ' + estimate.quota + ' bytes');
-            cbPrint('loadRemote: storage usage: ' + estimate.usage + ' bytes');
-        });
-    }
+    navigator.storage.estimate().then(function (estimate) {
+        cbPrint('loadRemote: storage quota: ' + estimate.quota + ' bytes');
+        cbPrint('loadRemote: storage usage: ' + estimate.usage + ' bytes');
+    });
+
+    const whisperModel = createWisperModel()
+    whisperModel.isModelExists(url).then(exists => {
+        if (!exists) {
+            fetchRemote(url, cbProgress, cbPrint).then(data => {
+                if (data) {
+                    whisperModel.saveModel(url, data).then(() => {
+                        console.log('save whisper mode to db done')
+                    })
+                }
+            })
+        }
+    })
 
     // check if the data is already in the IndexedDB
     let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
     let dbVersion = 1
-    let dbName    = 'whisper.ggerganov.com';
+    let dbName = 'whisper.ggerganov.com';
     const rq = indexedDB.open(dbName, dbVersion);
 
     rq.onupgradeneeded = function (event) {
         const db = event.target.result;
         if (db.version === 1) {
-            var os = db.createObjectStore('models', { autoIncrement: false });
+            var os = db.createObjectStore('models', {autoIncrement: false});
             cbPrint('loadRemote: created IndexedDB ' + db.name + ' version ' + db.version);
         } else {
             // clear the database
@@ -107,7 +117,7 @@ export function loadRemote(url, dst, size_mb, cbProgress, cbReady, cbCancel, cbP
         rq.onsuccess = function (event) {
             if (rq.result) {
                 cbPrint('loadRemote: "' + url + '" is already in the IndexedDB');
-                cbReady(dst, rq.result);
+                cbReady(dst, rq.result)
             } else {
                 // data is not in the IndexedDB
                 cbPrint('loadRemote: "' + url + '" is not in the IndexedDB');
