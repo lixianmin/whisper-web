@@ -10,34 +10,23 @@ import {render} from "solid-js/web";
 import {loadRemote} from "./code/helpers";
 
 function App() {
-    function storeFS(fname, buf) {
+    function storeFS(filename, buf) {
         // write to WASM file using FS_createDataFile
         // if the file exists, delete it
         try {
-            Module.FS_unlink(fname);
+            Module.FS_unlink(filename)
         } catch (e) {
             // ignore
         }
 
-        Module.FS_createDataFile("/", fname, buf, true, true);
-
-        printText('storeFS: stored model: ' + fname + ' size: ' + buf.length);
+        Module.FS_createDataFile("/", filename, buf, true, true)
+        printText('storeFS: stored model: ' + filename + ' size: ' + buf.length)
     }
 
     function loadWhisper() {
-        let url     = 'https://localhost/ggml-model-whisper-base.bin'
-        let dst     = 'whisper.bin';
-        let size_mb = 142;
-
-        let cbProgress = function(p) {
-            // console.log(p)
-        };
-
-        const cbCancel = function() {
-            console.log('canceled')
-        }
-
-        loadRemote(url, dst, size_mb, cbProgress, storeFS, cbCancel, printText);
+        let url = 'https://localhost/ggml-model-whisper-base.bin'
+        let dst = 'whisper.bin'
+        loadRemote(url, dst, storeFS, printText)
     }
 
     loadWhisper()
@@ -48,4 +37,4 @@ function App() {
 }
 
 const root = document.getElementById('root')
-render(() => <App />, root)
+render(() => <App/>, root)

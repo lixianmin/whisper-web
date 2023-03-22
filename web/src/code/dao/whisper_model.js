@@ -1,5 +1,6 @@
 'use strict'
 import Dexie from "dexie";
+import {joinUint8Array} from "../core/tools";
 
 /********************************************************************
  created:    2023-03-22
@@ -33,7 +34,7 @@ export function createWisperModel() {
         const chunkSize = 1024 * 1024 * 100
         const count = data.length / chunkSize
 
-        db.transaction('rw', db.models, async () => {
+        await db.transaction('rw', db.models, async () => {
             const exists = await _isModelExists(name)
             if (!exists) {
                 for (let i = 0; i < count; i++) {
@@ -46,8 +47,9 @@ export function createWisperModel() {
 
     async function _loadModel(name) {
         if (db.models) {
-            const chunks = await db.models.where({name}).toArray()
-            const data = chunks.join()
+            const items = await db.models.where({name}).toArray()
+            const chunks = items.map(item => item.chunk)
+            const data = joinUint8Array(chunks)
             return data
         }
     }
