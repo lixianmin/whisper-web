@@ -10,8 +10,6 @@ import {render} from "solid-js/web";
 import {loadRemote} from "./code/helpers";
 
 function App() {
-
-
     function storeFS(fname, buf) {
         // write to WASM file using FS_createDataFile
         // if the file exists, delete it
@@ -23,7 +21,7 @@ function App() {
 
         Module.FS_createDataFile("/", fname, buf, true, true);
 
-        printTextarea('storeFS: stored model: ' + fname + ' size: ' + buf.length);
+        printText('storeFS: stored model: ' + fname + ' size: ' + buf.length);
     }
 
     function loadWhisper() {
@@ -39,7 +37,7 @@ function App() {
             console.log('canceled')
         }
 
-        loadRemote(url, dst, size_mb, cbProgress, storeFS, cbCancel, printTextarea);
+        loadRemote(url, dst, size_mb, cbProgress, storeFS, cbCancel, printText);
     }
 
     loadWhisper()

@@ -1,24 +1,5 @@
 // Common Javascript functions used by the examples
 
-function convertTypedArray(src, type) {
-    var buffer = new ArrayBuffer(src.byteLength);
-    var baseView = new src.constructor(buffer).set(src);
-    return new type(buffer);
-}
-
-var printTextarea = (function() {
-    var element = document.getElementById('output');
-    if (element) element.value = ''; // clear browser cache
-    return function(text) {
-        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-        console.log(text);
-        if (element) {
-            element.value += text + "\n";
-            element.scrollTop = element.scrollHeight; // focus on bottom
-        }
-    };
-})();
-
 async function clearCache() {
     if (confirm('Are you sure you want to clear the cache?\nAll the models will be downloaded again.')) {
         indexedDB.deleteDatabase(dbName);
@@ -48,9 +29,9 @@ async function fetchRemote(url, cbProgress, cbPrint) {
     const total = parseInt(contentLength, 10);
     const reader = response.body.getReader();
 
-    var chunks = [];
-    var receivedLength = 0;
-    var progressLast = -1;
+    const chunks = [];
+    let receivedLength = 0;
+    let progressLast = -1;
 
     while (true) {
         const { done, value } = await reader.read();
@@ -73,8 +54,8 @@ async function fetchRemote(url, cbProgress, cbPrint) {
         }
     }
 
-    var position = 0;
-    var chunksAll = new Uint8Array(receivedLength);
+    let position = 0;
+    const chunksAll = new Uint8Array(receivedLength);
 
     for (var chunk of chunks) {
         chunksAll.set(chunk, position);
@@ -105,7 +86,7 @@ export function loadRemote(url, dst, size_mb, cbProgress, cbReady, cbCancel, cbP
     const rq = indexedDB.open(dbName, dbVersion);
 
     rq.onupgradeneeded = function (event) {
-        var db = event.target.result;
+        const db = event.target.result;
         if (db.version === 1) {
             var os = db.createObjectStore('models', { autoIncrement: false });
             cbPrint('loadRemote: created IndexedDB ' + db.name + ' version ' + db.version);

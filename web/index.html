@@ -8,15 +8,15 @@
 </head>
 <body>
 <script>
-    function printTextarea(...args) {
-        console.log(...args)
+    function printText(text) {
+        console.log(text)
     }
 
     var Module = {
-        print: printTextarea,
-        printErr: printTextarea,
+        print: printText,
+        printErr: printText,
         setStatus: function (text) {
-            printTextarea('js: ' + text);
+            printText('js: ' + text);
         },
         monitorRunDependencies: function (left) {
         }

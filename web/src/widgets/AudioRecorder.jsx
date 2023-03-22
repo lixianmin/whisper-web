@@ -15,9 +15,9 @@ export default function () {
             instance = Module.init('whisper.bin');
         }
 
-        printTextarea('');
-        printTextarea('js: processing - this might take a while ...');
-        printTextarea('');
+        printText('');
+        printText('js: processing - this might take a while ...');
+        printText('');
 
         setTimeout(function() {
             const language = 'zh'
@@ -27,7 +27,7 @@ export default function () {
             const ret = Module.full_default(instance, audio, language, nthreads, translate);
             console.log('js: full_default returned: ' + ret);
             if (ret) {
-                printTextarea("js: whisper returned: " + ret);
+                printText("js: whisper returned: " + ret);
             }
         }, 100);
     }
