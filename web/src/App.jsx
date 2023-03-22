@@ -25,8 +25,8 @@ function App() {
 
     function loadWhisper() {
         let url = 'https://localhost/ggml-model-whisper-base.bin'
-        let dst = 'whisper.bin'
-        loadRemote(url, dst, storeFS, printText)
+        let dstFileName = 'whisper.bin'
+        loadRemote(url, dstFileName, storeFS, printText)
     }
 
     loadWhisper()

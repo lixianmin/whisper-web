@@ -56,7 +56,7 @@ async function fetchRemote(url, cbPrint) {
 // load remote data
 // - check if the data is already in the IndexedDB
 // - if not, fetch it from the remote URL and store it in the IndexedDB
-export function loadRemote(url, dst, cbReady, cbPrint) {
+export function loadRemote(url, dstFileName, cbReady, cbPrint) {
     navigator.storage.estimate().then(function (estimate) {
         cbPrint('loadRemote: storage quota: ' + estimate.quota + ' bytes')
         cbPrint('loadRemote: storage usage: ' + estimate.usage + ' bytes')
@@ -66,14 +66,14 @@ export function loadRemote(url, dst, cbReady, cbPrint) {
     whisperModel.isModelExists(url).then(exists => {
         if (exists) {
             whisperModel.loadModel(url).then(data => {
-                cbReady(dst, data)
+                cbReady(dstFileName, data)
                 cbPrint(`load from db: ${data.length}`)
             })
         } else {
             fetchRemote(url, cbPrint).then(data => {
                 if (data) {
                     whisperModel.saveModel(url, data).then(() => {
-                        cbReady(dst, data)
+                        cbReady(dstFileName, data)
                         console.log(`download from web: ${data.length}`)
                     })
                 }

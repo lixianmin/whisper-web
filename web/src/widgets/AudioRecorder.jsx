@@ -9,29 +9,6 @@ import {onMount} from "solid-js";
  *********************************************************************/
 
 export default function () {
-    let instance = undefined
-    function onProcess(audio) {
-        if (!instance) {
-            instance = Module.init('whisper.bin');
-        }
-
-        printText('');
-        printText('js: processing - this might take a while ...');
-        printText('');
-
-        setTimeout(function() {
-            const language = 'zh'
-            const nthreads = 8
-            const translate = false
-
-            const ret = Module.full_default(instance, audio, language, nthreads, translate);
-            console.log('js: full_default returned: ' + ret);
-            if (ret) {
-                printText("js: whisper returned: " + ret);
-            }
-        }, 100);
-    }
-
     // todo UI控制相关的，应该跟model层拆到两个地方
     onMount(() => {
         const testKey = 'Control'
@@ -59,18 +36,17 @@ export default function () {
         noiseSuppression: true,
     })
 
-    let isRecording = false
+    let timeoutId = 0
     let mediaRecorder = undefined
 
     // record up to kMaxAudio_s seconds of audio from the microphone
     // check if doRecording is false every 1000 ms and stop recording if so
     // update progress information
     function startRecording() {
-        if (isRecording) {
+        if (timeoutId > 0) {
             return
         }
 
-        isRecording = true
         console.log('start recording~')
         navigator.mediaDevices.getUserMedia({audio: true, video: false})
             .then(function (stream) {
@@ -135,24 +111,43 @@ export default function () {
                 console.error('error getting audio stream: ' + err)
             })
 
-        setTimeout(function () {
-            if (isRecording) {
-                console.log(`recording stopped after ${kMaxAudioSeconds} seconds`)
-                stopRecording()
-            }
+        timeoutId = setTimeout(function () {
+            console.log(`recording stopped after ${kMaxAudioSeconds} seconds`)
+            stopRecording()
         }, kMaxAudioSeconds * 1000)
     }
 
     function stopRecording() {
-        if (isRecording) {
-            isRecording = false
+        if (timeoutId > 0) {
+            clearTimeout(timeoutId)
+            timeoutId = 0
             mediaRecorder.stop()
         }
     }
 
     // 录音结束了，设置到这里
+    let instance = undefined
+
     function onSetAudio(audio) {
-        onProcess(audio)
+        if (!instance) {
+            instance = Module.init('whisper.bin');
+        }
+
+        printText('')
+        printText('js: processing - this might take a while ...')
+        printText('')
+
+        setTimeout(function () {
+            const language = 'zh'
+            const nthreads = 8
+            const translate = false
+
+            const ret = Module.full_default(instance, audio, language, nthreads, translate)
+            console.log('js: full_default returned: ' + ret)
+            if (ret) {
+                printText("js: whisper returned: " + ret)
+            }
+        }, 100)
     }
 
     return <>

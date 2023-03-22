@@ -13,10 +13,19 @@
     }
 
     var Module = {
-        print: printText,
-        printErr: printText,
+        print: function (text) {
+            const isWhisperOutput = text.startsWith('[')
+            if (isWhisperOutput) {
+                console.log(text)
+            } else {
+                console.log(text)
+            }
+        },
+        printErr: function (text) {
+            console.log(text)
+        },
         setStatus: function (text) {
-            printText('js: ' + text);
+            console.log('status: ', text);
         },
         monitorRunDependencies: function (left) {
         }
