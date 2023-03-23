@@ -54,20 +54,29 @@ export default function () {
         navigator.mediaDevices.getUserMedia({audio: true, video: false})
             .then(function (stream) {
                 mediaRecorder = new MediaRecorder(stream)
+                let chunks = []
                 mediaRecorder.ondataavailable = function (evt) {
-                    const fileReader = new FileReader();
-                    fileReader.onload = function () {
-                        const result = fileReader.result
-                        transcribeAudio(result)
-                    }
-                    fileReader.readAsArrayBuffer(evt.data)
+                    chunks.push(evt.data)
+                }
+
+                function stopTracks() {
+                    stream.getTracks().forEach(function (track) {
+                        track.stop()
+                    })
                 }
 
                 // 录音结束的时候，会调用onstop，然后把chunks中的内容写到blob中，而后是使用reader读取blob中的内容，读成功后走到reader.onload()
                 mediaRecorder.onstop = function (e) {
-                    stream.getTracks().forEach(function (track) {
-                        track.stop()
-                    })
+                    const fileReader = new FileReader()
+                    fileReader.onload = function () {
+                        const result = fileReader.result
+                        transcribeAudio(result)
+                    }
+
+                    const blob = new Blob(chunks, {'type': 'audio/ogg; codecs=opus'})
+                    chunks = []
+                    fileReader.readAsArrayBuffer(blob)
+                    stopTracks()
                 }
 
                 mediaRecorder.start()
